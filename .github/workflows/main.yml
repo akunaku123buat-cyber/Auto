@@ -6,7 +6,6 @@ on:
     - cron: '0 0 * * *'
   workflow_dispatch:
 
-# Fitur untuk mematikan proses lama secara otomatis
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -19,7 +18,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: '3.10'
       - name: Install FFmpeg
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
       - name: Install Plugin
