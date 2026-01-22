@@ -1,32 +1,31 @@
 import requests
 import os
+import google.generativeai as genai
 
-def download_gambar(prompt, nama_file):
-    # Membersihkan prompt agar bisa masuk ke URL (spasi jadi _)
-    prompt_bersih = prompt.replace(" ", "_")
+def buat_prompt_gambar(naskah):
+    api_key = os.getenv("GEMINI_API_KEY")
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel('gemini-2.5-flash')
     
-    # Ukuran 1080x1920 untuk YouTube Shorts
-    url = f"https://image.pollinations.ai/prompt/{prompt_bersih}?width=1080&height=1920&nologo=true"
+    prompt_ai = f"Based on this script: '{naskah}', create a high-quality cinematic image prompt. focus on atmosphere, no text, 4k, portrait orientation."
+    response = model.generate_content(prompt_ai)
+    return response.text
+
+def download_gambar(naskah, nama_file):
+    prompt_keren = buat_prompt_gambar(naskah)
+    prompt_url = prompt_keren.replace(" ", "_").replace("\n", "")
     
-    print(f"Sedang mencarikan gambar untuk: {prompt}...")
+    url = f"https://image.pollinations.ai/prompt/{prompt_url}?width=1080&height=1920&nologo=true"
     
     try:
         response = requests.get(url, timeout=30)
         if response.status_code == 200:
-            # Pastikan folder assets ada
-            if not os.path.exists("assets/images"):
-                os.makedirs("assets/images")
-                
+            os.makedirs("assets/images", exist_ok=True)
             path_simpan = f"assets/images/{nama_file}.jpg"
             with open(path_simpan, "wb") as f:
                 f.write(response.content)
-            print(f"✅ Sukses! Gambar disimpan di: {path_simpan}")
             return path_simpan
-        else:
-            print("❌ Gagal mengambil gambar dari server.")
     except Exception as e:
-        print(f"❌ Terjadi error: {e}")
-
-if __name__ == "__main__":
-    tema = input("Mau gambar tentang apa? ")
-    download_gambar(tema, "background_utama")
+        print(f"Gagal buat gambar: {e}")
+    return None
+    
