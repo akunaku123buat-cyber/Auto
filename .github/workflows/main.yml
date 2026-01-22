@@ -1,40 +1,28 @@
-name: Bot Konten Otomatis
-
+name: Bot Auto
 on:
+  push:
+    branches: [ main ]
   schedule:
-    # Berjalan otomatis setiap jam 07:00 WIB (00:00 UTC)
-    - cron: '0 0 * * *'
-  workflow_dispatch: # Agar bisa dijalankan manual lewat tombol
+    - cron: '0 0 * * *' # Jalan otomatis setiap jam 7 pagi WIB
+  workflow_dispatch:
 
 jobs:
-  build:
+  run-bot:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Ambil Kode dari Repo
-      uses: actions/checkout@v4
-
-    - name: Install Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.9'
-
-    - name: Install FFmpeg dan Library
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y ffmpeg
-        pip install moviepy gTTS requests
-
-    - name: Jalankan Mesin Konten
-      run: |
-        # Memastikan folder ada agar tidak error
-        mkdir -p assets
-        mkdir -p output
-        chmod +x gas.sh
-        ./gas.sh
-
-    - name: Simpan Hasil Video
-      uses: actions/upload-artifact@v4
-      with:
-        name: video-harian
-        path: output/
+      - uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Install Plugin
+        run: pip install -r requirements.txt
+      - name: Gas!
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python main.py
+        
