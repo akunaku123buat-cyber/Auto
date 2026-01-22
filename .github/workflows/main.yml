@@ -1,0 +1,37 @@
+name: Bot Konten Otomatis
+
+on:
+  schedule:
+    # Berjalan setiap jam 00:00 UTC (Jam 07:00 pagi WIB)
+    - cron: '0 0 * * *'
+  workflow_dispatch: # Agar kamu bisa klik tombol "Run" manual kapan saja
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Ambil Kode dari Repo
+      uses: actions/checkout@v3
+
+    - name: Install Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install FFmpeg dan Library
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ffmpeg
+        pip install moviepy gTTS requests
+
+    - name: Jalankan Mesin Konten
+      run: |
+        chmod +x gas.sh
+        ./gas.sh
+
+    - name: Simpan Hasil Video
+      uses: actions/upload-artifact@v3
+      with:
+        name: video-harian
+        path: output/
