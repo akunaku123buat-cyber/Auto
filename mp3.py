@@ -18,13 +18,14 @@ async def hasilkan_suara_dan_sub(teks, nama_file):
             if chunk["type"] == "audio":
                 f.write(chunk["data"])
             elif chunk["type"] == "WordBoundary":
-                # Versi terbaru tetap menggunakan feed_boundary atau create_sub
                 submaker.create_sub((chunk["offset"], chunk["duration"]), chunk["text"])
 
-    # PERBAIKAN DI SINI:
-    # Gunakan .generate_subs() jika tersedia, jika tidak gunakan cara string format
+    # GANTI BAGIAN INI:
     with open(path_sub, "w", encoding="utf-8") as f:
-        f.write(submaker.generate_subs())
+        # Gunakan format srt langsung dari method generate_subs()
+        # Jika versi library sangat baru, pastikan formatnya benar
+        content = submaker.generate_subs()
+        f.write(content)
     
     return path_audio, path_sub
     
