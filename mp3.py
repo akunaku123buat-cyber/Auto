@@ -2,21 +2,25 @@ import asyncio
 import edge_tts
 import os
 
-async def hasilkan_suara(teks, nama_file):
-    # Kita pakai suara 'id-ID-ArdiNeural' (Pria) atau 'id-ID-GadisNeural' (Wanita)
-    VOICE = "id-ID-ArdiNeural" 
-    path_simpan = f"assets/audio/{nama_file}.mp3"
+async def hasilkan_suara_dan_sub(teks, nama_file):
+    VOICE = "id-ID-ArdiNeural"
+    path_audio = f"assets/audio/{nama_file}.mp3"
+    path_sub = f"assets/audio/{nama_file}.srt"
     
-    # Pastikan folder audio ada
-    if not os.path.exists("assets/audio"):
-        os.makedirs("assets/audio")
+    os.makedirs("assets/audio", exist_ok=True)
 
-    print(f"Sedang merubah teks jadi suara...")
     communicate = edge_tts.Communicate(teks, VOICE)
-    await communicate.save(path_simpan)
-    print(f"✅ Suara siap: {path_simpan}")
-    return path_simpan
+    submaker = edge_tts.SubMaker()
 
-if __name__ == "__main__":
-    naskah = input("Masukkan naskah motivasi: ")
-    asyncio.run(hasilkan_suara(naskah, "narasi_konten"))
+    with open(path_audio, "wb") as f:
+        async for chunk in communicate.stream():
+            if chunk["type"] == "audio":
+                f.write(chunk["data"])
+            elif chunk["type"] == "WordBoundary":
+                submaker.create_sub((chunk["offset"], chunk["duration"]), chunk["text"])
+
+    with open(path_sub, "w", encoding="utf-8") as f:
+        f.write(submaker.generate_subs())
+    
+    return path_audio, path_sub
+                        
