@@ -10,7 +10,7 @@ async def jalankan_otomatis():
     # Inisialisasi API
     api_key = os.getenv("GEMINI_API_KEY")
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-1.5-flash-latest')
+    model = genai.GenerativeModel('gemini-2.5-flash')
 
     # 1. BUAT NASKAH
     print("✍️ Membuat naskah...")
