@@ -64,29 +64,50 @@ async def main():
         await lapor(f"❌ RENDER GAGAL: {e}")
         return
 
-        # --- TAHAP 5: UPLOAD GDRIVE (Versi Anti-Quota Error) ---
+            # --- TAHAP 5: UPLOAD GDRIVE (MODE SEMBUNYI EMAIL) ---
     try:
         from google.oauth2 import service_account
         from googleapiclient.discovery import build
         from googleapiclient.http import MediaFileUpload
         
+        # Ambil email dari Secrets GitHub
+        MY_EMAIL = os.getenv("MY_GDRIVE_EMAIL")
+        
         info = json.loads(GDRIVE_JSON.strip())
         creds = service_account.Credentials.from_service_account_info(info)
         service = build('drive', 'v3', credentials=creds)
         
+        # 1. Upload File
         meta = {'name': f"ASMR_{tema}.mp4", 'parents': [FOLDER_ID]}
-        media = MediaFileUpload("hasil.mp4", mimetype='video/mp4')
+        media = MediaFileUpload("hasil.mp4", mimetype='video/mp4', resumable=True)
         
-        # TAMBAHKAN supportsAllDrives=True di sini
-        service.files().create(
+        file = service.files().create(
             body=meta, 
             media_body=media, 
-            supportsAllDrives=True 
+            fields='id',
+            supportsAllDrives=True
         ).execute()
         
-        await lapor(f"✅ AKHIRNYA TEMBUS!\n🎬 Tema: {tema}\n📂 Cek Drive sekarang!")
+        file_id = file.get('id')
+
+        # 2. Pindahkan Kepemilikan (Pakai email dari Secret)
+        user_permission = {
+            'type': 'user',
+            'role': 'owner',
+            'emailAddress': MY_EMAIL 
+        }
+        
+        service.permissions().create(
+            fileId=file_id,
+            body=user_permission,
+            transferOwnership=True,
+            supportsAllDrives=True
+        ).execute()
+        
+        await lapor(f"✅ BERHASIL TOTAL, KETUA!\n🎬 Video: {tema}\n📂 Sudah masuk ke Drive kamu.")
     except Exception as e:
         await lapor(f"❌ GDRIVE GAGAL: {e}")
+
 
 
 if __name__ == "__main__":
