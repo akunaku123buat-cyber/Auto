@@ -2,6 +2,7 @@ google-generativeai
 python-telegram-bot
 yt-dlp
 moviepy==1.0.3
+decorator==4.4.2
 requests
 google-api-python-client
 google-auth-httplib2
