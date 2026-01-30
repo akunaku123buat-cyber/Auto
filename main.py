@@ -12,7 +12,7 @@ GEMINI_KEY = os.getenv("GEMINI_API_KEY")
 TG_TOKEN = os.getenv("TELEGRAM_TOKEN")
 CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 GDRIVE_JSON = os.getenv("GDRIVE_CREDENTIALS")
-FOLDER_ID = "14VaQQKHy6-e3bkCdlfX_XsPYEMmuRRpi"
+FOLDER_ID = "1A_Qy7lMNnkClfNas8v41J4aipIlHcCyh"
 
 async def lapor(pesan):
     try:
