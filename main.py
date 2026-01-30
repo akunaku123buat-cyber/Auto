@@ -64,23 +64,30 @@ async def main():
         await lapor(f"❌ RENDER GAGAL: {e}")
         return
 
-    # 5. UPLOAD GDRIVE
+        # --- TAHAP 5: UPLOAD GDRIVE (Versi Anti-Quota Error) ---
     try:
         from google.oauth2 import service_account
         from googleapiclient.discovery import build
         from googleapiclient.http import MediaFileUpload
         
-        info = json.loads(GDRIVE_JSON)
+        info = json.loads(GDRIVE_JSON.strip())
         creds = service_account.Credentials.from_service_account_info(info)
         service = build('drive', 'v3', credentials=creds)
         
         meta = {'name': f"ASMR_{tema}.mp4", 'parents': [FOLDER_ID]}
         media = MediaFileUpload("hasil.mp4", mimetype='video/mp4')
-        service.files().create(body=meta, media_body=media).execute()
         
-        await lapor(f"✅ VIDEO SELESAI!\n🎬 Tema: {tema}\n📂 Cek Drive Bos!")
+        # TAMBAHKAN supportsAllDrives=True di sini
+        service.files().create(
+            body=meta, 
+            media_body=media, 
+            supportsAllDrives=True 
+        ).execute()
+        
+        await lapor(f"✅ AKHIRNYA TEMBUS!\n🎬 Tema: {tema}\n📂 Cek Drive sekarang!")
     except Exception as e:
         await lapor(f"❌ GDRIVE GAGAL: {e}")
+
 
 if __name__ == "__main__":
     asyncio.run(main())
