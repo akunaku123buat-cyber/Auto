@@ -1,14 +1,11 @@
 name: Bot Auto
+
 on:
   push:
     branches: [ main ]
-  #schedule:
-    - cron:
-  workflow_dispatch:
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch: # Tombol manual ada di sini
 
 jobs:
   run-bot:
@@ -28,5 +25,6 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GDRIVE_CREDENTIALS: ${{ secrets.GDRIVE_CREDENTIALS }}
         run: python main.py
         
