@@ -28,7 +28,7 @@ async def main():
     try:
         client = genai.Client(api_key=GEMINI_KEY)
         response = client.models.generate_content(
-            model="gemini-2.0-flash", 
+            model="gemini-2.5-flash", 
             contents="Give me 1 simple English word for ASMR nature (e.g. Forest, Ocean, Rain). Just 1 word."
         )
         tema = response.text.strip()
