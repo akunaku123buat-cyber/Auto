@@ -1,4 +1,4 @@
-google-generativeai
+google-genai
 python-telegram-bot
 yt-dlp
 moviepy==1.0.3
