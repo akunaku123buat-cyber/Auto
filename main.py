@@ -1,7 +1,7 @@
 import os
 import json
 import requests
-import google.generativeai as genai
+from google import genai
 from telegram import Bot
 import yt_dlp
 import sys
